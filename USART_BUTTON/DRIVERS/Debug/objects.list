@@ -1,0 +1,6 @@
+"./DRIVER _DEVELOP/Src/STM32_GPIO_DRIVER.o"
+"./DRIVER _DEVELOP/Src/STM32_USART_DRIVER.o"
+"./Src/main.o"
+"./Src/syscalls.o"
+"./Src/sysmem.o"
+"./Startup/startup_stm32f446retx.o"
