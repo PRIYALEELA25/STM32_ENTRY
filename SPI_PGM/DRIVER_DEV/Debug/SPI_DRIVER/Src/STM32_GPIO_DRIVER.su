@@ -1,0 +1,2 @@
+../SPI_DRIVER/Src/STM32_GPIO_DRIVER.c:11:6:GPIO_PeriClockControl	16	static
+../SPI_DRIVER/Src/STM32_GPIO_DRIVER.c:37:6:GPIO_Init	24	static

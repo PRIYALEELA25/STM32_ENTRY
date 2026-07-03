@@ -1,0 +1,6 @@
+"./SPI_DRIVER/Src/STM32_GPIO_DRIVER.o"
+"./SPI_DRIVER/Src/STM32_SPI_DRIVER.o"
+"./Src/main.o"
+"./Src/syscalls.o"
+"./Src/sysmem.o"
+"./Startup/startup_stm32f446retx.o"
