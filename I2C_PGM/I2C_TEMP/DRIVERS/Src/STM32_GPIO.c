@@ -1,0 +1,196 @@
+/*
+ * STM32_GPIO.c
+ *
+ *  Created on: Jul 2, 2026
+ *      Author: hp
+ */
+
+
+
+#include "STM32_GPIO.h"
+/*********************************************************************
+ * @fn          - GPIO_PeriClockControl
+ *
+ * @brief       - Enables or disables peripheral clock for GPIO port
+ *
+ * @param[in]   - pGPIOx: GPIO port base address
+ * @param[in]   - EnorDi: ENABLE or DISABLE macros
+ *
+ * @return      - none
+ *
+ * @Note        - none
+ *********************************************************************/
+
+
+/****************************************************************
+ * Peripheral Clock Control
+ ****************************************************************/
+
+void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx,uint8_t ENorDIS)
+{
+    if(ENorDIS == ENABLE)
+    {
+        if(pGPIOx == GPIOA)
+            GPIOA_CLK_EN();
+        else if(pGPIOx == GPIOB)
+            GPIOB_CLK_EN();
+        else if(pGPIOx == GPIOC)
+            GPIOC_CLK_EN();
+        else if(pGPIOx == GPIOD)
+            GPIOD_CLK_EN();
+        else if(pGPIOx == GPIOE)
+            GPIOE_CLK_EN();
+        else if(pGPIOx == GPIOF)
+            GPIOF_CLK_EN();
+        else if(pGPIOx == GPIOG)
+            GPIOG_CLK_EN();
+        else if(pGPIOx == GPIOH)
+            GPIOH_CLK_EN();
+    }
+    else
+    {
+        if(pGPIOx == GPIOA)
+            GPIOA_CLK_DIS();
+        else if(pGPIOx == GPIOB)
+            GPIOB_CLK_DIS();
+        else if(pGPIOx == GPIOC)
+            GPIOC_CLK_DIS();
+        else if(pGPIOx == GPIOD)
+            GPIOD_CLK_DIS();
+        else if(pGPIOx == GPIOE)
+            GPIOE_CLK_DIS();
+        else if(pGPIOx == GPIOF)
+            GPIOF_CLK_DIS();
+        else if(pGPIOx == GPIOG)
+            GPIOG_CLK_DIS();
+        else if(pGPIOx == GPIOH)
+            GPIOH_CLK_DIS();
+    }
+}
+
+/****************************************************************
+ * GPIO Initialization
+ ****************************************************************/
+
+void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
+{
+    uint32_t temp = 0;
+
+    GPIO_PeriClockControl(pGPIOHandle->pGPIOx,ENABLE);
+
+    /************ MODE ************/
+    temp = pGPIOHandle->GPIO_PinConfig.GPIO_PinMode;
+    pGPIOHandle->pGPIOx->MODER &= ~(0x3 << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+    pGPIOHandle->pGPIOx->MODER |= (temp << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+
+    /************ SPEED ************/
+    temp = pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed;
+    pGPIOHandle->pGPIOx->OSPEEDER &= ~(0x3 << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+    pGPIOHandle->pGPIOx->OSPEEDER |= (temp << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+
+    /************ PULL-UP/PULL-DOWN ************/
+    temp = pGPIOHandle->GPIO_PinConfig.GPIO_PinPUPDControl;
+    pGPIOHandle->pGPIOx->PUPDR &= ~(0x3 << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+    pGPIOHandle->pGPIOx->PUPDR |= (temp << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+
+    /************ OUTPUT TYPE ************/
+    temp = pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType;
+    pGPIOHandle->pGPIOx->OTYPER &= ~(0x1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+    pGPIOHandle->pGPIOx->OTYPER |= (temp << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+
+    /************ ALTERNATE FUNCTION ************/
+    if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_ALTFN)
+    {
+        uint8_t temp1,temp2;
+
+        temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 8;
+        temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 8;
+
+        pGPIOHandle->pGPIOx->AFR[temp1] &= ~(0xF << (4 * temp2));
+
+        pGPIOHandle->pGPIOx->AFR[temp1] |=
+                (pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFuncmode << (4 * temp2));
+    }
+}
+
+/****************************************************************
+ * GPIO DeInit
+ ****************************************************************/
+
+void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
+{
+    if(pGPIOx == GPIOA)
+        RCC->AHB1RSTR |= (1<<0);
+    else if(pGPIOx == GPIOB)
+        RCC->AHB1RSTR |= (1<<1);
+    else if(pGPIOx == GPIOC)
+        RCC->AHB1RSTR |= (1<<2);
+    else if(pGPIOx == GPIOD)
+        RCC->AHB1RSTR |= (1<<3);
+    else if(pGPIOx == GPIOE)
+        RCC->AHB1RSTR |= (1<<4);
+    else if(pGPIOx == GPIOF)
+        RCC->AHB1RSTR |= (1<<5);
+    else if(pGPIOx == GPIOG)
+        RCC->AHB1RSTR |= (1<<6);
+    else if(pGPIOx == GPIOH)
+        RCC->AHB1RSTR |= (1<<7);
+
+    RCC->AHB1RSTR = 0;
+}
+
+/****************************************************************
+ * Read Input Pin
+ ****************************************************************/
+
+uint8_t GPIO_READFROMINPUTPIN(GPIO_RegDef_t *pGPIOx,uint8_t PinNumber)
+{
+    uint8_t value;
+
+    value = (uint8_t)((pGPIOx->IDR >> PinNumber) & 0x01);
+
+    return value;
+}
+
+/****************************************************************
+ * Read Input Port
+ ****************************************************************/
+
+uint16_t GPIO_READFROMINPUTPORT(GPIO_RegDef_t *pGPIOx)
+{
+    return (uint16_t)pGPIOx->IDR;
+}
+
+/****************************************************************
+ * Write Output Pin
+ ****************************************************************/
+
+void GPIO_WRITETOOUTPUTPIN(GPIO_RegDef_t *pGPIOx,uint8_t PinNumber,uint8_t value)
+{
+    if(value == ENABLE)
+    {
+        pGPIOx->ODR |= (1 << PinNumber);
+    }
+    else
+    {
+        pGPIOx->ODR &= ~(1 << PinNumber);
+    }
+}
+
+/****************************************************************
+ * Write Output Port
+ ****************************************************************/
+
+void GPIO_WRITETOOUTPUTPORT(GPIO_RegDef_t *pGPIOx,uint8_t value)
+{
+    pGPIOx->ODR = value;
+}
+
+/****************************************************************
+ * Toggle Output Pin
+ ****************************************************************/
+
+void GPIO_TOGGLEOUTPUTPIN(GPIO_RegDef_t *pGPIOx,uint8_t PinNumber)
+{
+    pGPIOx->ODR ^= (1 << PinNumber);
+}

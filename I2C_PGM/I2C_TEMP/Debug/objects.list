@@ -1,0 +1,7 @@
+"./DRIVERS/Src/STM32_GPIO.o"
+"./DRIVERS/Src/STM32_I2C.o"
+"./DRIVERS/Src/STM32_UART.o"
+"./Src/main.o"
+"./Src/syscalls.o"
+"./Src/sysmem.o"
+"./Startup/startup_stm32f446retx.o"

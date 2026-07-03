@@ -1,0 +1,8 @@
+../DRIVERS/Src/STM32_UART.c:27:6:USART_PeriClockControl	16	static
+../DRIVERS/Src/STM32_UART.c:56:6:USART_Init	24	static
+../DRIVERS/Src/STM32_UART.c:136:6:USART_PeripheralControl	16	static
+../DRIVERS/Src/STM32_UART.c:151:17:RCC_GetPCLK1Value	4	static
+../DRIVERS/Src/STM32_UART.c:156:17:RCC_GetPCLK2Value	4	static
+../DRIVERS/Src/STM32_UART.c:164:13:USART_SetBaudRate	40	static
+../DRIVERS/Src/STM32_UART.c:194:6:USART_SendData	32	static
+../DRIVERS/Src/STM32_UART.c:238:6:USART_SendString	16	static
